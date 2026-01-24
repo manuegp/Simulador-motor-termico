@@ -1,0 +1,60 @@
+<mat-card class="card config-card">
+  <div class="card-header">
+    <div>
+      <h2 class="card-title">Configuración de simulación</h2>
+      <p class="card-subtitle">Añade la temperatura de entrada para cada punto.</p>
+    </div>
+    <mat-icon class="card-icon" color="primary" aria-hidden="true">tune</mat-icon>
+  </div>
+
+  <mat-card-content class="card-body mt-3">
+    <form [formGroup]="formGroup" class="form-grid">
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Temperatura (°C)</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="temperatura"
+          (keydown.enter)="onAdd()"
+          inputmode="decimal"
+          placeholder="Ej: 120"
+        />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="button" (click)="onAdd()" class="primary-action">
+        <mat-icon class="me-2" color="primary">add</mat-icon>
+        Añadir punto
+      </button>
+    </form>
+
+    <div
+      class="file-drop"
+      [class.is-dragover]="isDragOver"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <input
+        type="file"
+        accept=".csv,.xlsx"
+        class="file-input"
+        (change)="onFileSelected($event)"
+        #fileInput
+      />
+      <div class="file-content">
+        <mat-icon color="primary">upload_file</mat-icon>
+        <div>
+          <p class="file-title">Arrastra tu archivo o haz clic para subir</p>
+          <p class="file-subtitle">Formatos: .csv o .xlsx</p>
+        </div>
+        <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
+          Buscar archivo
+        </button>
+      </div>
+    </div>
+
+    @if(fileError) {
+      <p class="file-error">{{ fileError }}</p>
+    }
+  </mat-card-content>
+</mat-card>

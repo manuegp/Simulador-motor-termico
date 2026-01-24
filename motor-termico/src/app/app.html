@@ -1,0 +1,35 @@
+<main class="app-shell">
+  <app-simulation-header [totalPuntos]="temperaturas().length"></app-simulation-header>
+
+  <section class="content-grid">
+    <app-config-form
+      [formGroup]="tempForm"
+      (add)="addTemperatura()"
+      (load)="loadTemperaturas($event)"
+    ></app-config-form>
+
+    <app-temperaturas-list
+      [dataSource]="dataSourceEntrada"
+      [displayedColumns]="displayedColumnsEntrada"
+      [totalPuntos]="temperaturas().length"
+      (remove)="removeTemperatura($event)"
+      (ejecutar)="ejecutar()"
+    ></app-temperaturas-list>
+  </section>
+
+  <section [hidden]="dataSourceResultados.data.length === 0" class="results-section">
+    <app-resultados-table
+      [dataSource]="dataSourceResultados"
+      [displayedColumns]="displayedColumnsResultados"
+    ></app-resultados-table>
+  </section>
+
+  @if (isLoading()) {
+    <div class="ui-blocker" role="status" aria-live="polite">
+      <div class="spinner-card">
+        <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+        <p>Simulacion en curso...</p>
+      </div>
+    </div>
+  }
+</main>
