@@ -10,7 +10,7 @@
         color="primary"
         type="button"
         (click)="exportCsv()"
-        [disabled]="!dataSource?.data?.length"
+        [disabled]="!dataSource.data.length"
         aria-label="Exportar resultados a CSV"
       >
         <mat-icon>download</mat-icon>
