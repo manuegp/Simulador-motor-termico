@@ -4,7 +4,19 @@
       <h2 class="card-title">Temperaturas cargadas</h2>
       <p class="card-subtitle">Gestiona los puntos antes de simular.</p>
     </div>
-    <span class="pill">{{ totalPuntos }} puntos</span>
+    <div class="header-actions">
+      <span class="pill">{{ totalPuntos }} puntos</span>
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        (click)="onClearAll()"
+        [disabled]="totalPuntos === 0"
+      >
+        <mat-icon>delete_sweep</mat-icon>
+        Borrar todos
+      </button>
+    </div>
   </div>
 
   <mat-card-content class="card-body p-0">

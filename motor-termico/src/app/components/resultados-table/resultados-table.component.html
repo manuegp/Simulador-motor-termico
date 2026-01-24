@@ -4,7 +4,20 @@
       <h2 class="card-title">Resultados obtenidos</h2>
       <p class="card-subtitle">Compara la entrada y la salida en cada tiempo.</p>
     </div>
-    <mat-icon class="card-icon" color="primary" aria-hidden="true">insights</mat-icon>
+    <div class="header-actions">
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        (click)="exportCsv()"
+        [disabled]="!dataSource?.data?.length"
+        aria-label="Exportar resultados a CSV"
+      >
+        <mat-icon>download</mat-icon>
+        Exportar CSV
+      </button>
+      <mat-icon class="card-icon" color="primary" aria-hidden="true">insights</mat-icon>
+    </div>
   </div>
 
   <mat-card-content class="card-body p-0">
@@ -42,7 +55,12 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (mouseenter)="emitHover(row)"
+          (mouseleave)="emitHover(null)"
+        ></tr>
       </table>
     </div>
 

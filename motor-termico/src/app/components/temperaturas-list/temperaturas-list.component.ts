@@ -19,6 +19,7 @@ export class TemperaturasListComponent {
   @Input({ required: true }) displayedColumns: string[] = [];
   @Input({ required: true }) totalPuntos = 0;
   @Output() remove = new EventEmitter<number>();
+  @Output() clearAll = new EventEmitter<void>();
   @Output() ejecutar = new EventEmitter<void>();
 
   onRemove(index: number) {
@@ -27,5 +28,9 @@ export class TemperaturasListComponent {
 
   onEjecutar() {
     this.ejecutar.emit();
+  }
+
+  onClearAll() {
+    this.clearAll.emit();
   }
 }

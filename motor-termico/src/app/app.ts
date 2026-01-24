@@ -11,6 +11,7 @@ import { ConfigFormComponent } from './components/config-form/config-form.compon
 import { SimulationHeaderComponent } from './components/simulation-header/simulation-header.component';
 import { TemperaturasListComponent } from './components/temperaturas-list/temperaturas-list.component';
 import { ResultadosTableComponent } from './components/resultados-table/resultados-table.component';
+import { ResultadosChartComponent } from './components/resultados-chart/resultados-chart.component';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -23,6 +24,7 @@ import { finalize } from 'rxjs';
     SimulationHeaderComponent,
     ConfigFormComponent,
     TemperaturasListComponent,
+    ResultadosChartComponent,
     ResultadosTableComponent
   ],
   templateUrl: './app.html',
@@ -68,6 +70,7 @@ export class App {
   dataSourceResultados = new MatTableDataSource<FilaResultado>([]);
   displayedColumnsResultados = ['tiempo', 'entrada', 'salida'];
   isLoading = signal(false);
+  hoveredResultadoIndex = signal<number | null>(null);
 
   addTemperatura() {
     if (this.tempForm.invalid) return;
@@ -82,9 +85,14 @@ export class App {
     this.dataSourceEntrada.data = this.temperaturas();
   }
 
+  clearTemperaturas() {
+    this.temperaturas.set([]);
+    this.dataSourceEntrada.data = [];
+  }
+
   loadTemperaturas(values: number[]) {
     if (!values.length) return;
-    this.temperaturas.update(prev => [...prev, ...values]);
+    this.temperaturas.set(values);
     this.dataSourceEntrada.data = this.temperaturas();
   }
 

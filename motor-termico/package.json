@@ -34,6 +34,7 @@
     "@angular/router": "^21.1.0",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.8",
+    "chart.js": "^4.4.6",
     "chechu-desktop": "file:..",
     "jquery": "^4.0.0",
     "rxjs": "~7.8.0",

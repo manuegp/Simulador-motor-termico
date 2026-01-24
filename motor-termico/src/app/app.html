@@ -13,14 +13,20 @@
       [displayedColumns]="displayedColumnsEntrada"
       [totalPuntos]="temperaturas().length"
       (remove)="removeTemperatura($event)"
+      (clearAll)="clearTemperaturas()"
       (ejecutar)="ejecutar()"
     ></app-temperaturas-list>
   </section>
 
   <section [hidden]="dataSourceResultados.data.length === 0" class="results-section">
+    <app-resultados-chart
+      [data]="dataSourceResultados.data"
+      [hoveredIndex]="hoveredResultadoIndex()"
+    ></app-resultados-chart>
     <app-resultados-table
       [dataSource]="dataSourceResultados"
       [displayedColumns]="displayedColumnsResultados"
+      (hoverRow)="hoveredResultadoIndex.set($event)"
     ></app-resultados-table>
   </section>
 
