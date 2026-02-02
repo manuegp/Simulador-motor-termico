@@ -7,6 +7,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SimulacionService } from '../service/Simulacion';
 import { FilaResultado } from './models/fila-resultado';
+import { TemperaturaRow } from './models/temperatura-row';
 import { ConfigFormComponent } from './components/config-form/config-form.component';
 import { SimulationHeaderComponent } from './components/simulation-header/simulation-header.component';
 import { TemperaturasListComponent } from './components/temperaturas-list/temperaturas-list.component';
@@ -60,52 +61,77 @@ export class App {
   @ViewChild(ResultadosTableComponent) resultadosTable?: ResultadosTableComponent;
 
   tempForm = this.fb.group({
-    temperatura: [null, [Validators.required]]
+    temperaturaEntrada: [null, [Validators.required]],
+    temperaturaAmbiente: [null, [Validators.required]]
   });
 
-  temperaturas = signal<number[]>([]);
-  dataSourceEntrada = new MatTableDataSource<number>([]);
-  displayedColumnsEntrada = ['index', 'valor', 'acciones'];
+  temperaturasEntrada = signal<number[]>([]);
+  temperaturasAmbiente = signal<number[]>([]);
+  dataSourceEntrada = new MatTableDataSource<TemperaturaRow>([]);
+  displayedColumnsEntrada = ['index', 'entrada', 'ambiente', 'acciones'];
 
   dataSourceResultados = new MatTableDataSource<FilaResultado>([]);
-  displayedColumnsResultados = ['tiempo', 'entrada', 'salida'];
+  displayedColumnsResultados = ['tiempo', 'entrada', 'ambiente', 'salida'];
   isLoading = signal(false);
   hoveredResultadoIndex = signal<number | null>(null);
 
   addTemperatura() {
     if (this.tempForm.invalid) return;
-    const value = this.tempForm.value.temperatura!;
-    this.temperaturas.update(prev => [...prev, value]);
-    this.dataSourceEntrada.data = this.temperaturas();
+    const entrada = this.tempForm.value.temperaturaEntrada!;
+    const ambiente = this.tempForm.value.temperaturaAmbiente!;
+    this.temperaturasEntrada.update(prev => [...prev, entrada]);
+    this.temperaturasAmbiente.update(prev => [...prev, ambiente]);
+    this.dataSourceEntrada.data = this.temperaturasEntrada().map((value, index) => ({
+      entrada: value,
+      ambiente: this.temperaturasAmbiente()[index]
+    }));
     this.tempForm.reset();
   }
 
   removeTemperatura(index: number) {
-    this.temperaturas.update(prev => prev.filter((_, i) => i !== index));
-    this.dataSourceEntrada.data = this.temperaturas();
+    this.temperaturasEntrada.update(prev => prev.filter((_, i) => i !== index));
+    this.temperaturasAmbiente.update(prev => prev.filter((_, i) => i !== index));
+    this.dataSourceEntrada.data = this.temperaturasEntrada().map((value, i) => ({
+      entrada: value,
+      ambiente: this.temperaturasAmbiente()[i]
+    }));
   }
 
   clearTemperaturas() {
-    this.temperaturas.set([]);
+    this.temperaturasEntrada.set([]);
+    this.temperaturasAmbiente.set([]);
     this.dataSourceEntrada.data = [];
   }
 
-  loadTemperaturas(values: number[]) {
-    if (!values.length) return;
-    this.temperaturas.set(values);
-    this.dataSourceEntrada.data = this.temperaturas();
+  loadTemperaturas(values: { entrada: number[]; ambiente: number[] }) {
+    if (!values.entrada.length) return;
+    const entrada = values.entrada;
+    const ambiente =
+      values.ambiente.length === values.entrada.length
+        ? values.ambiente
+        : values.entrada.map(value => value);
+
+    this.temperaturasEntrada.set(entrada);
+    this.temperaturasAmbiente.set(ambiente);
+    this.dataSourceEntrada.data = entrada.map((value, index) => ({
+      entrada: value,
+      ambiente: ambiente[index] ?? value
+    }));
   }
 
   ejecutar() {
-    if (this.temperaturas().length === 0 || this.isLoading()) return;
+    if (this.temperaturasEntrada().length === 0 || this.isLoading()) return;
 
     this.isLoading.set(true);
-    this.simulacionService.startSimulation(this.temperaturas())
+    this.simulacionService
+      .startSimulation(this.temperaturasEntrada(), this.temperaturasAmbiente())
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe((res: any) => {
+        const ambienteLocal = this.temperaturasAmbiente();
         const filas: FilaResultado[] = res.tiempo.map((t: number, i: number) => ({
           tiempo: t,
           entrada: res.entrada[i],
+          ambiente: ambienteLocal[i] ?? res.entrada[i],
           salida: res.salida[i]
         }));
 

@@ -1,18 +1,18 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "express",
+  "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "chechu-desktop": "file:..",
     "cors": "^2.8.5",
-    "express": "^5.2.1"
+    "express": "5.1.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^5.2.0",
+    "@types/cors": "^2.8.17",
+    "@types/node": "20.11.17",
+    "@types/express": "5.0.0",
+    "typescript": "5.8.3"
   }
 }

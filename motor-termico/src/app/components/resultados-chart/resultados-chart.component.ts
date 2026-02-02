@@ -65,6 +65,17 @@ export class ResultadosChartComponent implements AfterViewInit, OnChanges, OnDes
             fill: true
           },
           {
+            label: 'Ambiente',
+            data: this.data.map(item => item.ambiente),
+            borderColor: '#f97316',
+            backgroundColor: 'rgba(249, 115, 22, 0.18)',
+            borderWidth: 2,
+            tension: 0.35,
+            pointRadius: 2,
+            pointHoverRadius: 4,
+            fill: true
+          },
+          {
             label: 'Salida',
             data: this.data.map(item => item.salida),
             borderColor: '#14b8a6',
@@ -129,7 +140,10 @@ export class ResultadosChartComponent implements AfterViewInit, OnChanges, OnDes
       this.chart.data.datasets[0].data = this.data.map(item => item.entrada);
     }
     if (this.chart.data.datasets[1]) {
-      this.chart.data.datasets[1].data = this.data.map(item => item.salida);
+      this.chart.data.datasets[1].data = this.data.map(item => item.ambiente);
+    }
+    if (this.chart.data.datasets[2]) {
+      this.chart.data.datasets[2].data = this.data.map(item => item.salida);
     }
     this.chart.update();
   }
@@ -149,7 +163,8 @@ export class ResultadosChartComponent implements AfterViewInit, OnChanges, OnDes
 
     const active = [
       { datasetIndex: 0, index },
-      { datasetIndex: 1, index }
+      { datasetIndex: 1, index },
+      { datasetIndex: 2, index }
     ];
 
     const meta = this.chart.getDatasetMeta(0);

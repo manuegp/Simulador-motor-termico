@@ -5,7 +5,6 @@ yarn-error.log*
 pnpm-debug.log*
 
 dist/
-dist-electron/
 build/
 out/
 .parcel-cache/

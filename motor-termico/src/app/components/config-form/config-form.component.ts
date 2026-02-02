@@ -24,7 +24,7 @@ import { MatInputModule } from '@angular/material/input';
 export class ConfigFormComponent {
   @Input({ required: true }) formGroup!: FormGroup;
   @Output() add = new EventEmitter<void>();
-  @Output() load = new EventEmitter<number[]>();
+  @Output() load = new EventEmitter<{ entrada: number[]; ambiente: number[] }>();
 
   isDragOver = false;
   fileError = '';
@@ -84,16 +84,24 @@ export class ConfigFormComponent {
   }
 
   parseNumbers(raw: string) {
-    return raw
-      .split(/[\s,;]+/g)
-      .map(value => value.replace(',', '.').trim())
-      .filter(Boolean)
-      .map(value => Number(value))
-      .filter(value => Number.isFinite(value));
+    const lines = raw
+      .split(/\r?\n/g)
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    const rows = lines.map(line => {
+      const separator = line.includes(';') ? ';' : ',';
+      return line
+        .split(separator)
+        .map(value => value.trim())
+        .filter(Boolean);
+    });
+
+    return this.parseRows(rows);
   }
 
-  emitValues(values: number[]) {
-    if (values.length === 0) {
+  emitValues(values: { entrada: number[]; ambiente: number[] }) {
+    if (values.entrada.length === 0) {
       this.fileError = 'No se encontraron números válidos en el archivo.';
       return;
     }
@@ -108,16 +116,43 @@ export class ConfigFormComponent {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       const rows: unknown[][] = xlsx.utils.sheet_to_json(sheet, { header: 1 }) as unknown[][];
-      const values = rows
-        .flat()
-        .map(value => (typeof value === 'string' ? value.replace(',', '.').trim() : value))
-        .filter(value => value !== null && value !== undefined && value !== '')
-        .map(value => Number(value))
-        .filter(value => Number.isFinite(value));
+      const values = this.parseRows(rows);
       this.emitValues(values);
     } catch (error) {
       this.fileError =
         'Para leer .xlsx instala la librería "xlsx". Si no, usa un .csv.';
     }
   }
+
+  private parseRows(rows: unknown[][]) {
+    const parsedRows = rows.map(row =>
+      row
+        .map(value =>
+          typeof value === 'string' ? value.replace(',', '.').trim() : value
+        )
+        .filter(value => value !== null && value !== undefined && value !== '')
+        .map(value => Number(value))
+        .filter(value => Number.isFinite(value))
+    );
+
+    const hasTwoColumns = parsedRows.some(row => row.length >= 2);
+    const entrada: number[] = [];
+    const ambiente: number[] = [];
+
+    parsedRows.forEach(row => {
+      if (row.length === 0) return;
+      if (hasTwoColumns) {
+        if (row.length >= 2) {
+          entrada.push(row[0]);
+          ambiente.push(row[1]);
+        }
+        return;
+      }
+      entrada.push(row[0]);
+      ambiente.push(row[0]);
+    });
+
+    return { entrada, ambiente };
+  }
+
 }

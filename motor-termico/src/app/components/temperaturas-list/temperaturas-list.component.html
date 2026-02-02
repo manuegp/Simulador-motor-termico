@@ -22,7 +22,7 @@
   <mat-card-content class="card-body p-0">
     <cdk-virtual-scroll-viewport itemSize="48" class="viewport-entrada">
       <div class="table-scroll">
-        <table mat-table [dataSource]="dataSource" class="w-100 compact-table">
+                <table mat-table [dataSource]="dataSource" class="w-100 compact-table">
           <ng-container matColumnDef="index">
             <th mat-header-cell *matHeaderCellDef class="ps-4"> # </th>
             <td
@@ -35,10 +35,17 @@
             </td>
           </ng-container>
 
-          <ng-container matColumnDef="valor">
-            <th mat-header-cell *matHeaderCellDef> Valor (°C) </th>
-            <td mat-cell *matCellDef="let element" [attr.data-label]="'Valor (°C)'">
-              {{ element }}°C
+          <ng-container matColumnDef="entrada">
+            <th mat-header-cell *matHeaderCellDef> Entrada (°C) </th>
+            <td mat-cell *matCellDef="let element" [attr.data-label]="'Entrada (°C)'">
+              {{ element.entrada }}°C
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="ambiente">
+            <th mat-header-cell *matHeaderCellDef> Ambiente (°C) </th>
+            <td mat-cell *matCellDef="let element" [attr.data-label]="'Ambiente (°C)'">
+              {{ element.ambiente }}°C
             </td>
           </ng-container>
 
@@ -82,3 +89,5 @@
     </div>
   </mat-card-content>
 </mat-card>
+
+

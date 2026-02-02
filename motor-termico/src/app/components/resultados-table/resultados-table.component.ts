@@ -66,10 +66,11 @@ export class ResultadosTableComponent implements AfterViewInit {
   exportCsv() {
     if (!this.dataSource?.data?.length) return;
 
-    const headers = ['Tiempo', 'Entrada', 'Salida'];
+    const headers = ['Tiempo', 'Entrada', 'Ambiente', 'Salida'];
     const rows = this.dataSource.data.map(row => [
       this.formatCsvValue(row.tiempo),
       this.formatCsvValue(row.entrada),
+      this.formatCsvValue(row.ambiente),
       this.formatCsvValue(row.salida)
     ]);
 

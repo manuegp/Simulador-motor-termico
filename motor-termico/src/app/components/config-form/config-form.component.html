@@ -2,29 +2,51 @@
   <div class="card-header">
     <div>
       <h2 class="card-title">Configuración de simulación</h2>
-      <p class="card-subtitle">Añade la temperatura de entrada para cada punto.</p>
+      <p class="card-subtitle">Añade pares entrada/ambiente por punto o cárgalos desde un archivo.</p>
     </div>
-    <mat-icon class="card-icon" color="primary" aria-hidden="true">tune</mat-icon>
+    <div class="header-chip">
+      <mat-icon aria-hidden="true">playlist_add</mat-icon>
+      <span>1 punto = 2 valores</span>
+    </div>
   </div>
 
   <mat-card-content class="card-body mt-3">
-    <form [formGroup]="formGroup" class="form-grid">
-      <mat-form-field appearance="outline" class="field">
-        <mat-label>Temperatura (°C)</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="temperatura"
-          (keydown.enter)="onAdd()"
-          inputmode="decimal"
-          placeholder="Ej: 120"
-        />
-      </mat-form-field>
+        <form [formGroup]="formGroup" class="form-grid">
+      <div class="inputs-row">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Temperatura de entrada (°C)</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="temperaturaEntrada"
+            (keydown.enter)="onAdd()"
+            inputmode="decimal"
+            placeholder="Ej: 120"
+          />
+          <mat-hint>Fluido que entra al tubo</mat-hint>
+        </mat-form-field>
 
-      <button mat-raised-button color="primary" type="button" (click)="onAdd()" class="primary-action">
-        <mat-icon class="me-2" color="primary">add</mat-icon>
-        Añadir punto
-      </button>
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Temperatura ambiente (°C)</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="temperaturaAmbiente"
+            (keydown.enter)="onAdd()"
+            inputmode="decimal"
+            placeholder="Ej: 20"
+          />
+          <mat-hint>Aire exterior alrededor del tubo</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="actions-row">
+        <button mat-raised-button color="primary" type="button" (click)="onAdd()" class="primary-action">
+          <mat-icon class="me-2" color="primary">add</mat-icon>
+          Añadir punto
+        </button>
+        <p class="helper-text">Tip: puedes pegar valores y presionar Enter.</p>
+      </div>
     </form>
 
     <div
@@ -45,7 +67,8 @@
         <mat-icon color="primary">upload_file</mat-icon>
         <div>
           <p class="file-title">Arrastra tu archivo o haz clic para subir</p>
-          <p class="file-subtitle">Formatos: .csv o .xlsx</p>
+          <p class="file-subtitle">Formato recomendado: entrada,ambiente (dos columnas)</p>
+          <code class="file-example">120,20</code>
         </div>
         <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
           Buscar archivo
@@ -58,3 +81,6 @@
     }
   </mat-card-content>
 </mat-card>
+
+
+

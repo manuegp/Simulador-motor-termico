@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { TemperaturaRow } from '../../models/temperatura-row';
 
 @Component({
   selector: 'app-temperaturas-list',
@@ -15,7 +16,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemperaturasListComponent {
-  @Input({ required: true }) dataSource!: MatTableDataSource<number>;
+  @Input({ required: true })
+  dataSource!: MatTableDataSource<TemperaturaRow>;
   @Input({ required: true }) displayedColumns: string[] = [];
   @Input({ required: true }) totalPuntos = 0;
   @Output() remove = new EventEmitter<number>();
@@ -31,6 +33,6 @@ export class TemperaturasListComponent {
   }
 
   onClearAll() {
-    this.clearAll.emit();
+    this.clearAll.emit(); 
   }
 }

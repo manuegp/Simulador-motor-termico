@@ -1,48 +1,80 @@
-# Electron (Windows)
+﻿# Motor Termico (Web)
 
-Este proyecto empaqueta el frontend Angular y el backend Express en una app Electron,
-generando un **.exe portable** para Windows (sin instalador).
-
-## Requisitos
-- Windows 10/11
-- Node.js LTS (incluye npm)
-- Git (opcional, solo para clonar)
+Simulador termico con frontend Angular y backend Express (Vercel).
 
 ## Estructura
 - `motor-termico/` -> Angular (frontend)
-- `backend/` -> Express (API)
-- `electron/main.js` -> proceso principal de Electron
-- `dist-electron/` -> salida del build del .exe portable
+- `backend/` -> Express + API serverless (Vercel)
 
-## Instalacion de dependencias
-Desde la raiz (`c:\dev\chechu_script`):
+## Requisitos
+- Node.js LTS (incluye npm)
+- Vercel CLI (opcional, para desarrollo local del backend)
+
+## Desarrollo local
+### Backend (API)
+En una terminal:
 ```
+cd backend
 npm install
-npm run install:all
+npx vercel dev
+```
+Por defecto escucha en `http://localhost:3000`.
+
+### Frontend (Angular)
+En otra terminal:
+```
+cd motor-termico
+npm install
+npm run dev
+```
+Abre `http://localhost:4200`.
+
+El frontend en modo desarrollo usa `proxy.conf.json` para redirigir `/api` al backend local.
+
+## Endpoints principales
+### POST /api/simular
+Body (JSON):
+```
+{
+  "temperaturas": [number, ...],
+  "temperaturasAmbiente": [number, ...], // opcional
+  "dt": 5 // opcional, en segundos
+}
 ```
 
-## Ejecutar en modo app (local)
-Construye el frontend y abre la ventana Electron:
+Respuesta (JSON):
 ```
-npm run start
+{
+  "dt_segundos": number,
+  "n_puntos": number,
+  "tiempo": number[],
+  "entrada": number[],
+  "salida": number[],
+  "temperatura_final": number
+}
 ```
 
-## Compilar el .exe portable
-Genera el ejecutable en `dist-electron\`:
+## Configuracion
+Backend:
+- `ALLOWED_ORIGINS` (opcional): lista separada por comas para CORS. Si no se define, permite cualquier origen.
+
+Frontend:
+- `motor-termico/src/environments/environment.development.ts` -> base URL `/api` (proxy).
+- `motor-termico/src/environments/environment.ts` -> URL de produccion.
+
+## Build
+Frontend:
 ```
-npm run dist
+cd motor-termico
+npm run build
 ```
 
-## Solucion de problemas
-- **Build no encontrado**: ejecuta `npm run build:ui` y revisa que exista
-  `motor-termico\dist\motor-termico\browser\index.html`.
-- **No cargan JS/CSS en Electron**: ya se usa `baseHref: "./"`. Rebuild:
-  `npm run build:ui`.
-- **Error de permisos con winCodeSign**:
-  - Activa Developer Mode en Windows (Settings → Privacy & Security → For Developers).
-  - Borra cache: `rmdir /s /q "%LOCALAPPDATA%\electron-builder\Cache\winCodeSign"`.
-  - Reintenta `npm run dist`.
+Backend (compila TypeScript):
+```
+cd backend
+npm run build
+```
 
 ## Notas
-- El backend levanta por defecto en `http://localhost:3000`.
-- El frontend se carga desde archivos estaticos (build de Angular).
+- El backend exporta la app de Express para Vercel (`backend/api/index.ts`).
+- Hay scripts Python en `backend/` que no se usan en la API actual.

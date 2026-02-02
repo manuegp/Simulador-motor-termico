@@ -1,5 +1,5 @@
 <main class="app-shell">
-  <app-simulation-header [totalPuntos]="temperaturas().length"></app-simulation-header>
+  <app-simulation-header [totalPuntos]="temperaturasEntrada().length"></app-simulation-header>
 
   <section class="content-grid">
     <app-config-form
@@ -11,7 +11,7 @@
     <app-temperaturas-list
       [dataSource]="dataSourceEntrada"
       [displayedColumns]="displayedColumnsEntrada"
-      [totalPuntos]="temperaturas().length"
+      [totalPuntos]="temperaturasEntrada().length"
       (remove)="removeTemperatura($event)"
       (clearAll)="clearTemperaturas()"
       (ejecutar)="ejecutar()"

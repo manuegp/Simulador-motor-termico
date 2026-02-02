@@ -12,6 +12,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 20px 22px 10px;
+  flex-wrap: wrap;
 }
 
 .card-title {
@@ -37,7 +38,15 @@
 }
 
 @media (max-width: 720px) {
+  .card-header {
+    align-items: flex-start;
+  }
+
+  .card-body {
+    padding: 0 16px 18px;
+  }
+
   .chart-wrapper {
-    height: 260px;
+    height: 240px;
   }
 }
