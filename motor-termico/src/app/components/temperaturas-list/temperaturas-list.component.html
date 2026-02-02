@@ -21,8 +21,12 @@
 
   <mat-card-content class="card-body p-0">
     <cdk-virtual-scroll-viewport itemSize="48" class="viewport-entrada">
-      <div class="table-scroll">
-                <table mat-table [dataSource]="dataSource" class="w-100 compact-table">
+      <div class="table-responsive table-scroll">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="w-100 compact-table table table-sm align-middle mb-0"
+        >
           <ng-container matColumnDef="index">
             <th mat-header-cell *matHeaderCellDef class="ps-4"> # </th>
             <td

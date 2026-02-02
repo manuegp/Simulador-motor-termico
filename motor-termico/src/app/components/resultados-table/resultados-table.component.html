@@ -21,12 +21,12 @@
   </div>
 
   <mat-card-content class="card-body p-0">
-    <div class="table-scroll">
+    <div class="table-responsive table-scroll">
       <table
         mat-table
         [dataSource]="dataSource"
         matSort
-        class="w-100 compact-table table-hover"
+        class="w-100 compact-table table table-sm table-hover align-middle mb-0"
       >
         <ng-container matColumnDef="tiempo">
           <th mat-header-cell *matHeaderCellDef mat-sort-header class="ps-4"> Tiempo </th>
