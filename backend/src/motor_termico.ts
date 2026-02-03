@@ -1,11 +1,11 @@
 ﻿// ==========================================
-// CONFIGURACION FISICA (Modelo 1D + Pared + Ambiente Dinamico)
+// CONFIGURACION FISICA (Modelo 1D + Pared + Ambiente Dinamico - AJUSTADO)
 // ==========================================
 const L_TUBO = 1.87;          // Longitud (m)
 const RADIO_INT = 0.005;      // Radio interno (m)
 const ESPESOR_PARED = 0.0014; // Espesor del tubo (m)
 const VELOCIDAD = 0.5;        // Velocidad del fluido (m/s)
-const N_SECCIONES = 100;      // Mayor resolucion espacial
+const N_SECCIONES = 100;      // Mas resolucion espacial
 
 // Propiedades del FLUIDO (Agua)
 const RHO_F = 997.0;  // Densidad (kg/m3)
@@ -20,9 +20,12 @@ const RHO_S = 8960.0;
 const CE_S = 385.0;
 // const K_S = 400.0; (No usada en modelo de parametros concentrados radial)
 
-// Coeficientes de Conveccion
-const H_CONV_INT = 500.0; // Agua -> Pared
-const H_CONV_EXT = 15.0;  // Pared -> Aire (Ambiente)
+// Coeficientes de Conveccion AJUSTADOS para tu experimento
+const H_CONV_INT = 1200.0; // Agua -> Pared (mas turbulencia real)
+const H_CONV_EXT = 25.0;   // Pared -> Aire (tubo expuesto)
+
+// Temperatura inicial de pared AJUSTADA (tubo templado)
+const T_PARED_INICIAL = 39.0; // C (no depende de Tamb[0])
 
 type ResultadoSimulacion = {
   tiempo: number[];
@@ -104,13 +107,11 @@ export function simular(
   const pasosPorDato = Math.ceil(dtSegundos / dtInterno);
   const dtReal = dtSegundos / pasosPorDato;
 
-  // 4. Inicializacion
-  // Asumimos que el tubo empieza en equilibrio con el PRIMER dato de ambiente
-  const T_amb_inicial = Number(temperaturasAmbiente[0]);
+  // 4. Inicializacion AJUSTADA
   const T_fluido_inicial = Number(temperaturasInput[0]);
 
   let T_fluido = new Array(N_SECCIONES).fill(T_fluido_inicial);
-  let T_pared = new Array(N_SECCIONES).fill(T_amb_inicial);
+  let T_pared = new Array(N_SECCIONES).fill(T_PARED_INICIAL);
 
   const resultados: number[] = [];
   const ejeTiempo: number[] = [];
