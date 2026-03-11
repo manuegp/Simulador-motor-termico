@@ -24,7 +24,11 @@ import { MatInputModule } from '@angular/material/input';
 export class ConfigFormComponent {
   @Input({ required: true }) formGroup!: FormGroup;
   @Output() add = new EventEmitter<void>();
-  @Output() load = new EventEmitter<{ entrada: number[]; ambiente: number[] }>();
+  @Output() load = new EventEmitter<{
+    entrada: number[];
+    ambiente: number[];
+    irradiancia: number[];
+  }>();
 
   isDragOver = false;
   fileError = '';
@@ -100,7 +104,7 @@ export class ConfigFormComponent {
     return this.parseRows(rows);
   }
 
-  emitValues(values: { entrada: number[]; ambiente: number[] }) {
+  emitValues(values: { entrada: number[]; ambiente: number[]; irradiancia: number[] }) {
     if (values.entrada.length === 0) {
       this.fileError = 'No se encontraron números válidos en el archivo.';
       return;
@@ -135,24 +139,36 @@ export class ConfigFormComponent {
         .filter(value => Number.isFinite(value))
     );
 
+    const hasThreeColumns = parsedRows.some(row => row.length >= 3);
     const hasTwoColumns = parsedRows.some(row => row.length >= 2);
     const entrada: number[] = [];
     const ambiente: number[] = [];
+    const irradiancia: number[] = [];
 
     parsedRows.forEach(row => {
       if (row.length === 0) return;
+      if (hasThreeColumns) {
+        if (row.length >= 3) {
+          entrada.push(row[0]);
+          ambiente.push(row[1]);
+          irradiancia.push(row[2]);
+        }
+        return;
+      }
       if (hasTwoColumns) {
         if (row.length >= 2) {
           entrada.push(row[0]);
           ambiente.push(row[1]);
+          irradiancia.push(0);
         }
         return;
       }
       entrada.push(row[0]);
       ambiente.push(row[0]);
+      irradiancia.push(0);
     });
 
-    return { entrada, ambiente };
+    return { entrada, ambiente, irradiancia };
   }
 
 }

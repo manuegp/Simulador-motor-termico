@@ -62,13 +62,22 @@ export class App {
 
   tempForm = this.fb.group({
     temperaturaEntrada: [null, [Validators.required]],
-    temperaturaAmbiente: [null, [Validators.required]]
+    temperaturaAmbiente: [null, [Validators.required]],
+    irradiancia: [null, [Validators.required]],
+    L_TUBO: [1.87],
+    RADIO_INT: [0.005],
+    ESPESOR_PARED: [0.0014],
+    VELOCIDAD: [0.021],
+    RHO_F: [997.0],
+    CE_F: [4178.0],
+    K_F: [0.6]
   });
 
   temperaturasEntrada = signal<number[]>([]);
   temperaturasAmbiente = signal<number[]>([]);
+  irradiancias = signal<number[]>([]);
   dataSourceEntrada = new MatTableDataSource<TemperaturaRow>([]);
-  displayedColumnsEntrada = ['index', 'entrada', 'ambiente', 'acciones'];
+  displayedColumnsEntrada = ['index', 'entrada', 'ambiente', 'irradiancia', 'acciones'];
 
   dataSourceResultados = new MatTableDataSource<FilaResultado>([]);
   displayedColumnsResultados = ['tiempo', 'entrada', 'ambiente', 'salida'];
@@ -79,11 +88,14 @@ export class App {
     if (this.tempForm.invalid) return;
     const entrada = this.tempForm.value.temperaturaEntrada!;
     const ambiente = this.tempForm.value.temperaturaAmbiente!;
+    const irradiancia = this.tempForm.value.irradiancia!;
     this.temperaturasEntrada.update(prev => [...prev, entrada]);
     this.temperaturasAmbiente.update(prev => [...prev, ambiente]);
+    this.irradiancias.update(prev => [...prev, irradiancia]);
     this.dataSourceEntrada.data = this.temperaturasEntrada().map((value, index) => ({
       entrada: value,
-      ambiente: this.temperaturasAmbiente()[index]
+      ambiente: this.temperaturasAmbiente()[index],
+      irradiancia: this.irradiancias()[index]
     }));
     this.tempForm.reset();
   }
@@ -91,40 +103,73 @@ export class App {
   removeTemperatura(index: number) {
     this.temperaturasEntrada.update(prev => prev.filter((_, i) => i !== index));
     this.temperaturasAmbiente.update(prev => prev.filter((_, i) => i !== index));
+    this.irradiancias.update(prev => prev.filter((_, i) => i !== index));
     this.dataSourceEntrada.data = this.temperaturasEntrada().map((value, i) => ({
       entrada: value,
-      ambiente: this.temperaturasAmbiente()[i]
+      ambiente: this.temperaturasAmbiente()[i],
+      irradiancia: this.irradiancias()[i]
     }));
   }
 
   clearTemperaturas() {
     this.temperaturasEntrada.set([]);
     this.temperaturasAmbiente.set([]);
+    this.irradiancias.set([]);
     this.dataSourceEntrada.data = [];
   }
 
-  loadTemperaturas(values: { entrada: number[]; ambiente: number[] }) {
+  loadTemperaturas(values: {
+    entrada: number[];
+    ambiente: number[];
+    irradiancia: number[];
+  }) {
     if (!values.entrada.length) return;
     const entrada = values.entrada;
     const ambiente =
       values.ambiente.length === values.entrada.length
         ? values.ambiente
         : values.entrada.map(value => value);
+    const irradiancia =
+      values.irradiancia.length === values.entrada.length
+        ? values.irradiancia
+        : values.entrada.map(() => 0);
 
     this.temperaturasEntrada.set(entrada);
     this.temperaturasAmbiente.set(ambiente);
+    this.irradiancias.set(irradiancia);
     this.dataSourceEntrada.data = entrada.map((value, index) => ({
       entrada: value,
-      ambiente: ambiente[index] ?? value
+      ambiente: ambiente[index] ?? value,
+      irradiancia: irradiancia[index] ?? 0
     }));
   }
 
   ejecutar() {
     if (this.temperaturasEntrada().length === 0 || this.isLoading()) return;
 
+    const values = this.tempForm.getRawValue();
+    const toOptionalNumber = (value: number | null | undefined) =>
+      value === null || value === undefined ? undefined : value;
+
+    const parametros = {
+      L_TUBO: toOptionalNumber(values.L_TUBO),
+      RADIO_INT: toOptionalNumber(values.RADIO_INT),
+      ESPESOR_PARED: toOptionalNumber(values.ESPESOR_PARED),
+      VELOCIDAD: toOptionalNumber(values.VELOCIDAD),
+      RHO_F: toOptionalNumber(values.RHO_F),
+      CE_F: toOptionalNumber(values.CE_F),
+      K_F: toOptionalNumber(values.K_F)
+    };
+
     this.isLoading.set(true);
     this.simulacionService
-      .startSimulation(this.temperaturasEntrada(), this.temperaturasAmbiente())
+      .startSimulation(
+        this.temperaturasEntrada(),
+        this.temperaturasAmbiente(),
+        this.irradiancias(),
+        60,
+        parametros
+      )
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe((res: any) => {
         const ambienteLocal = this.temperaturasAmbiente();

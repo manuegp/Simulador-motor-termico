@@ -6,7 +6,7 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 html {
   height: 100%;
@@ -15,16 +15,22 @@ html {
       primary: mat.$azure-palette,
       tertiary: mat.$blue-palette,
     ),
-    typography: Manrope,
+    typography: 'Space Grotesk',
     density: 0,
   ));
 }
 
 :root {
-  --app-ink: #0f172a;
-  --app-muted: #5b6473;
-  --app-border: rgba(15, 23, 42, 0.08);
-  --app-accent: #4f46e5;
+  --app-ink: #111827;
+  --app-muted: #5b6b7c;
+  --app-border: rgba(17, 24, 39, 0.12);
+  --app-accent: #f97316;
+  --app-accent-strong: #ea580c;
+  --app-accent-soft: rgba(249, 115, 22, 0.16);
+  --app-cool: #0ea5e9;
+  --app-surface: #ffffff;
+  --app-card: #fff7ed;
+  --app-glow: rgba(249, 115, 22, 0.25);
 }
 
 .mat-icon.mat-primary {
@@ -48,13 +54,23 @@ body {
   // Set a default background, font and text colors for the application using
   // Angular Material's system-level CSS variables. Learn more about these
   // variables at https://material.angular.dev/guide/system-variables
-  background-color: #f8fafc;
-  color: var(--mat-sys-on-surface);
+  background:
+    radial-gradient(1200px 600px at 8% -10%, rgba(249, 115, 22, 0.18), transparent 52%),
+    radial-gradient(900px 520px at 92% -5%, rgba(14, 165, 233, 0.15), transparent 45%),
+    #f8fafc;
+  color: var(--app-ink);
   font: var(--mat-sys-body-medium);
-  font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
 
   // Reset the user agent margin.
   margin: 0;
   height: 100%;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Fraunces', 'Space Grotesk', serif;
+  letter-spacing: -0.02em;
 }
 /* You can add global styles to this file, and also import other style files */

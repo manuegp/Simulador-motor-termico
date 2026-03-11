@@ -2,18 +2,27 @@
 // MODELO 1D CON RADIACIÓN SOLAR Y TÉRMICA
 // ==========================================
 
-// Geometría
-const L_TUBO = 1.87;
-const RADIO_INT = 0.005;
-const ESPESOR_PARED = 0.0014;
-const VELOCIDAD = 0.021; // CORREGIDO
+export type SimulacionParametros = Partial<{
+    L_TUBO: number;
+    RADIO_INT: number;
+    ESPESOR_PARED: number;
+    VELOCIDAD: number;
+    RHO_F: number;
+    CE_F: number;
+    K_F: number;
+}>;
+
+// Geometría (defaults)
+const DEFAULT_L_TUBO = 1.87;
+const DEFAULT_RADIO_INT = 0.005;
+const DEFAULT_ESPESOR_PARED = 0.0014;
+const DEFAULT_VELOCIDAD = 0.021; // CORREGIDO
 const N_SECCIONES = 100;
 
-// Propiedades agua
-const RHO_F = 997.0;
-const CE_F  = 4178.0;
-const K_F   = 0.6;
-const ALFA_F = K_F / (RHO_F * CE_F);
+// Propiedades agua (defaults)
+const DEFAULT_RHO_F = 997.0;
+const DEFAULT_CE_F  = 4178.0;
+const DEFAULT_K_F   = 0.6;
 
 // Propiedades cobre
 const RHO_S = 8960.0;
@@ -32,34 +41,26 @@ const FRACCION_SOL = 1.0;     // 1.0 = todo el tubo al sol
 
 const T_PARED_INICIAL = 35.0;
 
-type SimularResultado = {
-    tiempo: number[];
-    salida: number[];
-    pared_final: number[];
-};
-
 export function simular(
     temperaturasInput: number[],
-    temperaturasAmbienteOrDt?: number[] | number,
-    dtMaybe?: number,
-    irradianciasInput?: number[]
-): SimularResultado {
+    temperaturasAmbiente: number[],
+    irradiancias: number[],
+    dtSegundos = 60.0,
+    parametros: SimulacionParametros = {}
+) {
+    const L_TUBO = parametros.L_TUBO ?? DEFAULT_L_TUBO;
+    const RADIO_INT = parametros.RADIO_INT ?? DEFAULT_RADIO_INT;
+    const ESPESOR_PARED = parametros.ESPESOR_PARED ?? DEFAULT_ESPESOR_PARED;
+    const VELOCIDAD = parametros.VELOCIDAD ?? DEFAULT_VELOCIDAD;
 
-    const temperaturasAmbiente = Array.isArray(temperaturasAmbienteOrDt)
-        ? temperaturasAmbienteOrDt
-        : undefined;
-    const dtSegundos =
-        typeof temperaturasAmbienteOrDt === 'number'
-            ? temperaturasAmbienteOrDt
-            : dtMaybe ?? 60.0;
-
-    const longitudBase = temperaturasInput.length;
-    const tempsAmbiente = temperaturasAmbiente ?? new Array(longitudBase).fill(temperaturasInput[0]);
-    const irradiancias = irradianciasInput ?? new Array(longitudBase).fill(0);
+    const RHO_F = parametros.RHO_F ?? DEFAULT_RHO_F;
+    const CE_F = parametros.CE_F ?? DEFAULT_CE_F;
+    const K_F = parametros.K_F ?? DEFAULT_K_F;
+    const ALFA_F = K_F / (RHO_F * CE_F);
 
     const longitudSimulacion = Math.min(
         temperaturasInput.length,
-        tempsAmbiente.length,
+        temperaturasAmbiente.length,
         irradiancias.length
     );
 
@@ -79,6 +80,8 @@ export function simular(
 
     const Area_Int = Perimetro_Int * dx;
     const Area_Ext = Perimetro_Ext * dx;
+    // CORRECCIÓN 1: El sol solo impacta en la cara visible del tubo (Rectángulo proyectado)
+    const Area_Proyectada_Sol = (2 * Radio_Ext) * dx;
 
     // Estabilidad
     const dtMaxAdv = dx / VELOCIDAD;
@@ -97,7 +100,7 @@ export function simular(
     for (let i = 0; i < longitudSimulacion; i++) {
 
         const Tin = temperaturasInput[i];
-        const Tamb = tempsAmbiente[i];
+        const Tamb = temperaturasAmbiente[i];
         const G = irradiancias[i]; // W/m²
 
         for (let step = 0; step < pasosPorDato; step++) {
@@ -116,7 +119,8 @@ export function simular(
                 if (j < N_SECCIONES - 1) {
                     difusion = ALFA_F * (T_fluido[j+1] - 2*T_fluido[j] + T_fluido[j-1]) / (dx*dx);
                 } else {
-                    difusion = ALFA_F * (T_fluido[j] - 2*T_fluido[j] + T_fluido[j-1]) / (dx*dx);
+                    // CORRECCIÓN 3: Condición adiabática en la salida (gradiente térmico nulo hacia adelante)
+                    difusion = ALFA_F * (T_fluido[j-1] - T_fluido[j]) / (dx*dx);
                 }
 
                 const Q_agua_pared = H_CONV_INT * Area_Int * (T_pared[j] - T_fluido[j]);
@@ -128,14 +132,15 @@ export function simular(
 
                 const Q_conv = H_CONV_EXT * Area_Ext * (Tamb - T_pared[j]);
 
-                // Radiación térmica (Kelvin)
+                // CORRECCIÓN 2: Radiación térmica hacia la bóveda celeste (Kelvin)
                 const TparedK = T_pared[j] + 273.15;
                 const TambK = Tamb + 273.15;
+                const TcieloK = TambK - 12.0; // El cielo está aprox. 12 grados más frío que el aire
                 const Q_rad = EMISIVIDAD * SIGMA * Area_Ext *
-                              (Math.pow(TambK,4) - Math.pow(TparedK,4));
+                              (Math.pow(TcieloK,4) - Math.pow(TparedK,4));
 
-                // Radiación solar
-                const Q_solar = G * ABSORTIVIDAD * Area_Ext * FRACCION_SOL;
+                // Radiación solar (Usa el Área Proyectada, NO la exterior)
+                const Q_solar = G * ABSORTIVIDAD * Area_Proyectada_Sol * FRACCION_SOL;
 
                 const Q_total_pared =
                     (-Q_agua_pared) +

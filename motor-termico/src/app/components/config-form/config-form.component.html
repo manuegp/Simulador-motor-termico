@@ -6,7 +6,7 @@
     </div>
     <div class="header-chip">
       <mat-icon aria-hidden="true">playlist_add</mat-icon>
-      <span>1 punto = 2 valores</span>
+      <span>1 punto = 3 valores</span>
     </div>
   </div>
 
@@ -38,6 +38,19 @@
           />
           <mat-hint>Aire exterior alrededor del tubo</mat-hint>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Irradiancia (W/m2)</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="irradiancia"
+            (keydown.enter)="onAdd()"
+            inputmode="decimal"
+            placeholder="Ej: 800"
+          />
+          <mat-hint>Radiación solar sobre el tubo</mat-hint>
+        </mat-form-field>
       </div>
 
       <div class="actions-row">
@@ -46,6 +59,57 @@
           Añadir punto
         </button>
         <p class="helper-text">Tip: puedes pegar valores y presionar Enter.</p>
+      </div>
+      <div class="param-block">
+        <p class="section-title">Parametros del modelo</p>
+
+        <div class="inputs-row">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>L_TUBO (m)</mat-label>
+            <input matInput type="number" formControlName="L_TUBO" inputmode="decimal" />
+            <mat-hint>Longitud del tubo</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>RADIO_INT (m)</mat-label>
+            <input matInput type="number" formControlName="RADIO_INT" inputmode="decimal" />
+            <mat-hint>Radio interno</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>ESPESOR_PARED (m)</mat-label>
+            <input matInput type="number" formControlName="ESPESOR_PARED" inputmode="decimal" />
+            <mat-hint>Espesor del tubo</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="inputs-row">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>VELOCIDAD (m/s)</mat-label>
+            <input matInput type="number" formControlName="VELOCIDAD" inputmode="decimal" />
+            <mat-hint>Velocidad del fluido</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>RHO_F (kg/m3)</mat-label>
+            <input matInput type="number" formControlName="RHO_F" inputmode="decimal" />
+            <mat-hint>Densidad del fluido</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>CE_F (J/kg*K)</mat-label>
+            <input matInput type="number" formControlName="CE_F" inputmode="decimal" />
+            <mat-hint>Calor especifico</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="inputs-row">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>K_F (W/m*K)</mat-label>
+            <input matInput type="number" formControlName="K_F" inputmode="decimal" />
+            <mat-hint>Conductividad termica</mat-hint>
+          </mat-form-field>
+        </div>
       </div>
     </form>
 
@@ -67,8 +131,8 @@
         <mat-icon color="primary">upload_file</mat-icon>
         <div>
           <p class="file-title">Arrastra tu archivo o haz clic para subir</p>
-          <p class="file-subtitle">Formato recomendado: entrada,ambiente (dos columnas)</p>
-          <code class="file-example">120,20</code>
+          <p class="file-subtitle">Formato recomendado: entrada,ambiente,irradiancia (tres columnas)</p>
+          <code class="file-example">120,20,800</code>
         </div>
         <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
           Buscar archivo

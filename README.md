@@ -37,7 +37,8 @@ Body (JSON):
 ```
 {
   "temperaturas": [number, ...],
-  "temperaturasAmbiente": [number, ...], // opcional
+  "temperaturasAmbiente": [number, ...],
+  "irradiancias": [number, ...],
   "dt": 5 // opcional, en segundos
 }
 ```

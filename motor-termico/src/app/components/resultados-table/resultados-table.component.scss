@@ -1,9 +1,10 @@
 .card {
   border-radius: 20px;
-  border: 1px solid var(--app-border);
-  box-shadow: 0 14px 28px -26px rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 20px 34px -28px rgba(15, 23, 42, 0.38);
   overflow: hidden;
   animation: rise 0.6s ease both;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .card-header {
@@ -15,3 +16,52 @@
   flex-wrap: wrap;
 }
 
+.card-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--app-ink);
+}
+
+.card-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--app-muted);
+}
+
+.card-body {
+  padding: 0 22px 22px;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.compact-table {
+  min-width: 620px;
+}
+
+.mat-mdc-header-row {
+  background: #ffffff;
+  box-shadow: inset 0 -1px 0 rgba(15, 23, 42, 0.08);
+}
+
+.mat-mdc-row:nth-child(even) {
+  background: rgba(249, 115, 22, 0.04);
+}
+
+.mat-mdc-row:hover {
+  background: rgba(14, 165, 233, 0.1);
+}
+
+mat-paginator {
+  background: rgba(249, 115, 22, 0.06);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 720px) {
+  .compact-table {
+    min-width: 0;
+  }
+}

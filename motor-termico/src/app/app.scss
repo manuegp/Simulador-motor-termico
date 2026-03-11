@@ -1,28 +1,57 @@
 .app-shell {
   min-height: 100vh;
   padding: clamp(16px, 3vw, 32px);
-  background: radial-gradient(circle at top left, #f6f7fb 0%, #eef2ff 45%, #f9fafb 100%);
   position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  z-index: 0;
+}
+
+.app-shell::before,
+.app-shell::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  filter: blur(0px);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.app-shell::before {
+  width: 360px;
+  height: 360px;
+  left: -120px;
+  top: 80px;
+  background: radial-gradient(circle at 30% 30%, rgba(249, 115, 22, 0.35), transparent 65%);
+}
+
+.app-shell::after {
+  width: 300px;
+  height: 300px;
+  right: -100px;
+  top: 20px;
+  background: radial-gradient(circle at 70% 30%, rgba(14, 165, 233, 0.3), transparent 60%);
 }
 
 .content-grid {
   display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 26px;
+  grid-template-columns: 1fr;
   margin-top: 24px;
 }
 
 .results-section {
   margin-top: 28px;
   display: grid;
-  gap: 20px;
+  gap: 22px;
+  grid-template-columns: 1fr;
 }
 
 .ui-blocker {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35);
-  backdrop-filter: blur(2px);
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(4px) saturate(120%);
   display: grid;
   place-items: center;
   z-index: 1000;
@@ -35,12 +64,24 @@
   justify-items: center;
   padding: 20px 24px;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--app-surface);
   border: 1px solid var(--app-border);
-  box-shadow: 0 18px 30px -20px rgba(15, 23, 42, 0.5);
+  box-shadow: 0 18px 30px -20px rgba(15, 23, 42, 0.45);
   color: var(--app-ink);
   text-align: center;
   font-weight: 600;
+}
+
+@media (min-width: 1080px) {
+  .content-grid {
+    grid-template-columns: minmax(360px, 1.1fr) minmax(320px, 0.9fr);
+    align-items: start;
+  }
+
+  .results-section {
+    grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr);
+    align-items: start;
+  }
 }
 
 @keyframes rise {
